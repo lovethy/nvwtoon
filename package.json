@@ -1,0 +1,24 @@
+{
+  "name": "nv-webtoon",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "nodemon ./bin/www"
+  },
+  "dependencies": {
+    "axios": "^0.19.2",
+    "cheerio": "^1.0.0-rc.3",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "ejs": "~2.6.1",
+    "express": "~4.16.1",
+    "express-ejs-layouts": "^2.5.0",
+    "html-pdf": "^2.2.0",
+    "http-errors": "~1.6.3",
+    "morgan": "~1.9.1",
+    "node-zip": "^1.1.1",
+    "pdfkit": "^0.11.0",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.5"
+  }
+}

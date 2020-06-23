@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link type="text/css" href="bootstrap5/css/bootstrap.css?v=1.0.0" rel="stylesheet">
+    <script type="text/javascript" src="bootstrap5/js/bootstrap.js"></script>
+    <script type="text/javascript" src="javascripts/common.js"></script>
+
+    <script type = "text/javascript" src = "http://code.jquery.com/jquery-latest.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
+  <script type="text/javascript" src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <script>
+    function saveAs(uri, filename) {
+// 캡쳐된 파일을 이미지 파일로 내보낸다.
+var link = document.createElement('a');
+if (typeof link.download === 'string') {
+link.href = uri;
+link.download = filename;
+document.body.appendChild(link);
+link.click();
+document.body.removeChild(link);
+} else {
+window.open(uri);
+}
+}
+
+  </script>
+</head>
+<body class="index-page">
+    <div class="navbar navbar-main navbar-expand-lg navbar-transparent navbar-light headroom">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-12">
+            <h1 class="mb-5">
+              <span>Naver Webtoon Previews</span>
+            </h1>
+            <a href="/json" class="btn btn-primary">JSON</a>
+            <a href="/page" class="btn btn-info">PAGE</a>
+            <a href="/fileSync" class="btn btn-danger">FILESYNC</a>
+            <button id="btn" type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#exampleModalLg">Large modal</button>
+          </div>    
+        </div>
+      </div>
+    </div>
+    <div class="wrapper">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-12" id="cont">
+                  <%- body %>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="footer has-cards">
+        <div class="container">
+          <hr>
+          <div class="row align-items-center justify-content-md-between">
+            <div class="col-md-6">
+              <div class="copyright">
+                © 2020 <a href="" target="_blank">EM goguma</a>.
+              </div>
+            </div>
+            <div class="col-md-6">
+              <ul class="nav nav-footer justify-content-end">
+                <li class="nav-item">
+                  <a href="" class="nav-link" target="_blank">About Us</a>
+                </li>
+                <li class="nav-item">
+                  <a href="" class="nav-link" target="_blank">Blog</a>
+                </li>
+                <li class="nav-item">
+                  <a href="" class="nav-link" target="_blank">License</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </footer>
+    <%- script %>
+
+
+<div class="modal fade" id="exampleModalLg" tabindex="-1" role="dialog" aria-labelledby="exampleModalLgLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title h4" id="exampleModalLgLabel"></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div id="dlist" class="modal-body"></div>
+      <ul id="pg" class="nav justify-content-center mb-4"></ul>
+    </div>
+  </div>
+</div>
+<form name="frm" action="/detail" method="post" target="dtlWin">
+  <input type="hidden" name="rurl" value="" />
+  <input type="hidden" name="titleId" id="titleId" value="" />
+  <input type="hidden" name="no" id="no" value="" />
+  <input type="hidden" name="weekday" id="weekday" value="" />
+  <input type="hidden" name="pdf" id="pdf" value="" />
+</form>
+</body>
+</html>
