@@ -17,6 +17,7 @@
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
     "node-zip": "^1.1.1",
+    "nodemon": "^2.0.4",
     "pdfkit": "^0.11.0",
     "request": "^2.88.2",
     "request-promise": "^4.2.5"
