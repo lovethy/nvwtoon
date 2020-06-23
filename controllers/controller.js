@@ -69,7 +69,9 @@ let getDetail = async function (req, res, next) {
                 var html = '';
                 var options = {
                     format: 'Letter',
-                    align : 'center'
+                    align : 'center',
+                    border: "0",
+                    
                 };
                 html += '<div style="width:690px;">';
                 for(var i = 0; i < json.length; i++){
