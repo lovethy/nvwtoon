@@ -4,6 +4,8 @@ const request = require('request');
 const axios = require('axios');
 const requestP= require('request-promise');
 const cheerio= require('cheerio');
+const zip = new require('node-zip')();
+
 const dataPath = 'data.json';
 var fs=require('fs');
 
@@ -168,32 +170,45 @@ let getDetail = async (ref) => {
     return smp;
 }
 
-let getDown = async (rfUrl) => {
+let getDown = async (rfUrl, callback) => {
     let j = request.jar();
     // let cookie1 = request.cookie('NID_JKL=fgXskXgLDOPUyf2PBcf8OmYY6d+W2j1Z7ZLl37zGF3k=');
     let cookie2 = request.cookie('NID_AUT=lVl6gzJp7FprV4U9lljBT0OkVGCYmjZpKfDpS0IXExrVr0rC/zShskIsB5QDcF9i');
     let cookie3 = request.cookie('NID_SES=AAABwZTMqX05g7+EPt0cBouaGCjZbTJsspSCUuBYw724TuzmpVzTO3MU5xIEsD7wsDqWNCLSMd6uUam5oAa+k3KjHsiByCm/dqr13RHhVQh2Ti2IdwAnLGbVc/a5T7SSRhy3Muj+1FcOXVnQjsWuohuaekAkxwnWy62hdKxLjEk9wjG34WkXdxBUNmWTrR87/fwWP++n+HBqGLa3mS/yp2fs1yGMlkuYRbCgp6YIGzRWVmTF2tNoGdRyyCChE88zOOzwjc3lGNIPULwuKk2XXyEKacg2XHztACmzE1yKBtsYeXRh7reLmQIObB7y6bCJfez/hdY80ZjvI1lLih7oP87JSTQtR2JDSTgmisGSFcmux453pjQghOZ/9U3wjgrYAYYaZxLmvwuwSvh8nES9d9tvd7nBIMzYs0/I0+P5hpxXT3iSFlCxUbdYXPqEalk4Wq3FOI901pDkKGIsHiy5Gme/un7m+lFwT+LscepIH4kmt+06jKgevvDARrdLZeKd4enfbz+OzbXE9TRXUyhj2HUali7WHEZsUEZS3sADzmiz0jBJ5fAwKO3jxJ3uIW1Kxt4YdWi63OpK/8ZBQpEZoKYzTdEYqIuQFcr7a8Wlc7T9oJl1');
+
     // j.setCookie(cookie1, cUrl);
     j.setCookie(cookie2, domain);
     j.setCookie(cookie3, domain);
-    //var rfUrl = "https://comic.naver.com/webtoon/detail.nhn?titleId=662774&no=191&weekday=wed";
     request({url:rfUrl, jar:j}, async (err, res, body) => {
         const $ = cheerio.load(body);
+        var img = [];
         $("div.wt_viewer img").each(function(i,el){
-            downloadImg($(this).attr("src"));
+            img.push($(this).attr("src"));
+        });
+        downImg(rfUrl, img, (sImg) => {
+            callback(sImg);
         });
     });
 }
 
-let downImg = (rfUrl, imgUrl) => {
-    request({
-        url : imgUrl,
-        headers : {'referer' : rfUrl},
-        encoding : null
-    }, (err, res, body) => {
-        fs.writeFile(__dirname +'/public/download/detail/'+imgUrl.split("_IMAG01_")[1], body, null, (err) => {
-            if(err) throw err;
-            console.log("The file has been saved");
+let downImg = async (rfUrl, img, callback) => {
+    let cnt = 0;
+    let sImg = [];
+    img.forEach(imgUrl => {
+        request({
+            url : imgUrl,
+            headers : {'referer' : rfUrl},
+            encoding : null
+        }, (err, res, body) => {
+            var spath = __dirname.replace('services','public') + '/download/detail/'+imgUrl.split("_IMAG01_")[1];
+            fs.writeFile(spath, body, null, (err) => {
+                if(err) throw err;
+                sImg.push(spath);
+                if(cnt == img.length-1){
+                    callback(sImg);
+                }
+                cnt++;
+            });
         });
     });
 }
@@ -221,9 +236,9 @@ let getNumberInFormat = (num) => {
 	}
 }
 
-// let getPdf = async function(res, json, tid, no){
-//     mkPdf.mkPdf(res, json, tid, no);
-// }
+let getZip = async function(ttl, img){
+    
+}
 
 module.exports = {
     getIndex : getIndex,
@@ -231,5 +246,7 @@ module.exports = {
     setPage : setPage,
     fileSync : fileSync,
     getList : getList,
-    getDetail : getDetail
+    getDetail : getDetail,
+    getDown : getDown,
+    getZip : getZip
 }

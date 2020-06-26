@@ -9,5 +9,6 @@ router.get('/page', controller.getPage);
 router.get('/fileSync', controller.fileSync);
 router.post('/list', controller.getList);
 router.post('/detail', controller.getDetail);
+router.post('/zip', controller.getZip);
 
 module.exports = router;

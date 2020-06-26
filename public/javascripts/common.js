@@ -5,20 +5,29 @@ function ajax(url, cb, ttl){
     }else{// IE5, IE6 일때
         xhttp = new ActiveXObject("Microsoft.XMLHTTP");
     }
-    var params = "rurl="+ escape(url);
-    var page = ["","/list","/detail"];
+    //var params = "rurl="+ escape(url);
+    setVal(url);
+    document.frm.rurl.value = url;
+    console.log(serialize(document.frm));
+    var params = serialize(document.frm);
+    var page = ["","/list","/detail","/zip"];
     xhttp.open('POST', page[cb], true);
     xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    
+    if(ttl != "") { 
+        document.getElementById('exampleModalLgLabel').innerText = ttl;
+        document.frm.title.value = ttl;
+    }
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             switch(cb){
-                case 1 : 
-                    document.getElementById('exampleModalLgLabel').innerText = ttl;
+                case 1 :
                     popList(this.response);
                     break;
                 case 2 :
                     getDetail(this.response);
+                    break;
+                case 3 :
+                    //getDetail(this.response);
                     break;
             }
         } else {}
@@ -58,6 +67,7 @@ function refTbl(ttl, lnk, img){
         el += '<div class="d-flex justify-content-between">';
         el += "<strong class='text-gray-dark'><a href=\"javascript:viewDetail('"+lnk+"',0);\">"+ttl+"</a></strong>";
         el += "<a role='button' class='btn btn-info' href=\"javascript:viewDetail('"+lnk+"',1);\">PDF</a>";
+        el += "<a role='button' class='btn btn-success' href=\"javascript:ajax('"+lnk+"',3,'');\">ZIP</a>";
         el += '</div></div></div>';
     return el;
 }
@@ -76,10 +86,11 @@ function getDetail(obj){
     console.log(json);
 }
 
-function viewDetail(url, pdf){
+function viewDetail(url, flag){
     setVal(url);
     document.frm.rurl.value = url;
-    document.frm.pdf.value = pdf;
+    document.frm.pdf.value = flag;
+    document.frm.target = flag == 0 ? 'dtlWin' : '_self';
     var win = document.frm.submit();
     win.focus();
 }
@@ -92,3 +103,6 @@ function setVal(url){
         if(document.getElementById(el[0])) document.getElementById(el[0]).value = el[1];
     }
 }
+
+
+function serialize(form){if(!form||form.nodeName!=="FORM"){return }var i,j,q=[];for(i=form.elements.length-1;i>=0;i=i-1){if(form.elements[i].name===""){continue}switch(form.elements[i].nodeName){case"INPUT":switch(form.elements[i].type){case"text":case"hidden":case"password":case"button":case"reset":case"submit":q.push(form.elements[i].name+"="+encodeURIComponent(form.elements[i].value));break;case"checkbox":case"radio":if(form.elements[i].checked){q.push(form.elements[i].name+"="+encodeURIComponent(form.elements[i].value))}break;case"file":break}break;case"TEXTAREA":q.push(form.elements[i].name+"="+encodeURIComponent(form.elements[i].value));break;case"SELECT":switch(form.elements[i].type){case"select-one":q.push(form.elements[i].name+"="+encodeURIComponent(form.elements[i].value));break;case"select-multiple":for(j=form.elements[i].options.length-1;j>=0;j=j-1){if(form.elements[i].options[j].selected){q.push(form.elements[i].name+"="+encodeURIComponent(form.elements[i].options[j].value))}}break}break;case"BUTTON":switch(form.elements[i].type){case"reset":case"submit":case"button":q.push(form.elements[i].name+"="+encodeURIComponent(form.elements[i].value));break}break}}return q.join("&")};
