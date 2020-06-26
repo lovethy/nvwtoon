@@ -1,7 +1,9 @@
 var Service = require('../services/service');
 var pdfD = require('html-pdf');
+var rimraf = require("rimraf");
 var fs = require('fs');
 const domain = "http://comic.naver.com";
+
 
 let getIndex = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
@@ -116,13 +118,14 @@ let getZip = async function (req, res, next) {
         //console.log(img);
         Service.getZip(title, tid, no, (savepath) => {
             var fileName = `${title}_${no}.zip`;
-            console.log(`public/download/detail/${fileName}`, fileName);
             return res.download(`public/download/detail/${fileName}`, fileName, function(err) {
                 if (err) console.log(err); // Check error if you want
                 //Run below code when if you want to Delete Created file to save your drive space
-                // fs.unlink(savepath+"/"+fileName, function(){ //Delete Pdf file after download
-                //     console.log("File is deleted") // Callback
-                // });
+                fs.unlink(savepath+fileName, function(){ //Delete Pdf file after download
+                    console.log("File is deleted") // Callback
+                });
+                
+                rimraf(savepath+tid+'_'+no, function () { console.log("folder deleted"); });
             });
         });
         
