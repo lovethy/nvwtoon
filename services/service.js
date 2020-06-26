@@ -4,10 +4,13 @@ const request = require('request');
 const axios = require('axios');
 const requestP= require('request-promise');
 const cheerio= require('cheerio');
-const zip = new require('node-zip')();
+const zipper = require('zip-local');
+
 
 const dataPath = 'data.json';
 var fs=require('fs');
+const { throws } = require('assert');
+const { error } = require('console');
 
 let getIndex = async function (query, page, limit) {
     try {
@@ -170,7 +173,7 @@ let getDetail = async (ref) => {
     return smp;
 }
 
-let getDown = async (rfUrl, callback) => {
+let getDown = async (rfUrl, tid, no, callback) => {
     let j = request.jar();
     // let cookie1 = request.cookie('NID_JKL=fgXskXgLDOPUyf2PBcf8OmYY6d+W2j1Z7ZLl37zGF3k=');
     let cookie2 = request.cookie('NID_AUT=lVl6gzJp7FprV4U9lljBT0OkVGCYmjZpKfDpS0IXExrVr0rC/zShskIsB5QDcF9i');
@@ -185,13 +188,21 @@ let getDown = async (rfUrl, callback) => {
         $("div.wt_viewer img").each(function(i,el){
             img.push($(this).attr("src"));
         });
-        downImg(rfUrl, img, (sImg) => {
-            callback(sImg);
+        var dir = __dirname.replace('services','public') + '/download/detail/' + tid +"_"+ no;
+        console.log(dir);
+        if(!fs.existsSync(dir)){
+            fs.mkdir(dir, (err) => {
+                if(err) console.log(err) ;
+            });
+        }
+
+        downImg(rfUrl, img, dir, (sImg) => {
+             callback(sImg);
         });
     });
 }
 
-let downImg = async (rfUrl, img, callback) => {
+let downImg = async (rfUrl, img, dir, callback) => {
     let cnt = 0;
     let sImg = [];
     img.forEach(imgUrl => {
@@ -200,7 +211,7 @@ let downImg = async (rfUrl, img, callback) => {
             headers : {'referer' : rfUrl},
             encoding : null
         }, (err, res, body) => {
-            var spath = __dirname.replace('services','public') + '/download/detail/'+imgUrl.split("_IMAG01_")[1];
+            var spath = dir+"/"+imgUrl.split("_IMAG01_")[1];
             fs.writeFile(spath, body, null, (err) => {
                 if(err) throw err;
                 sImg.push(spath);
@@ -236,8 +247,35 @@ let getNumberInFormat = (num) => {
 	}
 }
 
-let getZip = async function(ttl, img){
-    
+let getZip = async function(ttl, tid, no, cb){
+    var savepath = `./public/download/detail/${tid}_${no}`;
+    var rtpath = 'public/download/detail/';
+    // zipper.sync.zip(savepath).compress().save(`./public/download/detail/${ttl}_${no}.zip`, function(err) {
+    //     if(err) {
+    //        console.log(err);
+    //     } else {
+    //         console.log("zip 파일 끝 ");
+    //         cb(rtpath);
+    //     }
+    // });
+
+
+    zipper.zip(savepath, function(error, zipped) {
+ 
+        if(!error) {
+            zipped.compress(); // compress before exporting
+     
+            var buff = zipped.memory(); // get the zipped file as a Buffer
+     
+            // or save the zipped file to disk
+            zipped.save(`./public/download/detail/${ttl}_${no}.zip`, function(error) {
+                if(!error) {
+                    console.log("zip 파일 끝 ");
+                    cb(rtpath);
+                }
+            });
+        }
+    });
 }
 
 module.exports = {

@@ -1,3 +1,4 @@
+const pUrl = ["","/list","/detail","/zip"];
 function ajax(url, cb, ttl){
     var xhttp;
     if(window.XMLHttpRequest){
@@ -8,10 +9,9 @@ function ajax(url, cb, ttl){
     //var params = "rurl="+ escape(url);
     setVal(url);
     document.frm.rurl.value = url;
-    console.log(serialize(document.frm));
     var params = serialize(document.frm);
-    var page = ["","/list","/detail","/zip"];
-    xhttp.open('POST', page[cb], true);
+    
+    xhttp.open('POST', pUrl[cb], true);
     xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     if(ttl != "") { 
         document.getElementById('exampleModalLgLabel').innerText = ttl;
@@ -67,7 +67,7 @@ function refTbl(ttl, lnk, img){
         el += '<div class="d-flex justify-content-between">';
         el += "<strong class='text-gray-dark'><a href=\"javascript:viewDetail('"+lnk+"',0);\">"+ttl+"</a></strong>";
         el += "<a role='button' class='btn btn-info' href=\"javascript:viewDetail('"+lnk+"',1);\">PDF</a>";
-        el += "<a role='button' class='btn btn-success' href=\"javascript:ajax('"+lnk+"',3,'');\">ZIP</a>";
+        el += "<a role='button' class='btn btn-success' href=\"javascript:viewDetail('"+lnk+"',3);\">ZIP</a>";
         el += '</div></div></div>';
     return el;
 }
@@ -88,16 +88,17 @@ function getDetail(obj){
 
 function viewDetail(url, flag){
     setVal(url);
-    document.frm.rurl.value = url;
-    document.frm.pdf.value = flag;
-    document.frm.target = flag == 0 ? 'dtlWin' : '_self';
+    var fm = document.frm;
+    fm.rurl.value = url;
+    fm.pdf.value = flag;
+    fm.action = (flag == '3') ? '/zip' : '/detail';
+    fm.target = flag == 0 ? 'dtlWin' : '_self';
     var win = document.frm.submit();
     win.focus();
 }
 
 function setVal(url){
     var urlArr = url.split("?")[1].split("&");
-    console.log(urlArr.length);
     for(i=0;i < urlArr.length;i++){
         var el = urlArr[i].split("=");
         if(document.getElementById(el[0])) document.getElementById(el[0]).value = el[1];

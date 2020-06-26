@@ -88,11 +88,12 @@ let getDetail = async function (req, res, next) {
                     //return res.json(rs);
                     //return res.redirect(`pdf/${tid}_${no}.pdf`);
                     //return res.download(savepath);
+                    console.log(savepath+filename, filename);
                     return res.download(savepath+filename, filename, function(err) {
                         if (err) console.log(err); // Check error if you want
                         //Run below code when if you want to Delete Created file to save your drive space
                         fs.unlink(savepath+filename, function(){ //Delete Pdf file after download
-                            console.log("File was deleted") // Callback
+                            console.log("File is deleted") // Callback
                         });
                     });
                 });
@@ -111,10 +112,20 @@ let getZip = async function (req, res, next) {
     var pdf = req.body.pdf;
     var title = req.body.title;
     console.log(domain+fd);
-    Service.getDown(domain+fd, (img) => {
+    Service.getDown(domain+fd, tid, no, (img) => {
         //console.log(img);
-        Service.getZip(img);
-        return res.end;
+        Service.getZip(title, tid, no, (savepath) => {
+            var fileName = `${title}_${no}.zip`;
+            console.log(`public/download/detail/${fileName}`, fileName);
+            return res.download(`public/download/detail/${fileName}`, fileName, function(err) {
+                if (err) console.log(err); // Check error if you want
+                //Run below code when if you want to Delete Created file to save your drive space
+                // fs.unlink(savepath+"/"+fileName, function(){ //Delete Pdf file after download
+                //     console.log("File is deleted") // Callback
+                // });
+            });
+        });
+        
     });
 }
 
